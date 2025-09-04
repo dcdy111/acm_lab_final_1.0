@@ -544,6 +544,16 @@ applications_data = []
 team_data = []
 research_data = []
 
+# 健康检查端点
+@app.route('/health')
+def health_check():
+    """健康检查端点"""
+    return jsonify({
+        "status": "healthy",
+        "message": "ACM Lab AI Make is running",
+        "environment": "vercel" if os.environ.get('VERCEL') else "local"
+    })
+
 # 实验室官网首页路由
 @app.route('/')
 def index():
@@ -1510,6 +1520,11 @@ try:
     print("📊 数据库初始化完成")
 except Exception as e:
     print(f"⚠️ 数据库初始化警告: {e}")
+    # 在Vercel环境中，如果数据库初始化失败，继续运行
+    if os.environ.get('VERCEL'):
+        print("🔄 Vercel环境：跳过数据库初始化错误")
+    else:
+        raise e
 
 # Vercel部署入口点
 def handler(request):
@@ -1518,6 +1533,11 @@ def handler(request):
 
 # 导出应用实例供Vercel使用
 application = app
+
+# Vercel WSGI入口点
+def wsgi_handler(environ, start_response):
+    """Vercel WSGI处理器"""
+    return app(environ, start_response)
 
 if __name__ == '__main__':
     print("=" * 60)

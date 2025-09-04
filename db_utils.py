@@ -28,9 +28,14 @@ def get_db():
     """
     db_path = get_db_path()
     
-    # Vercel部署时使用只读模式
+    # 在Vercel环境中，如果数据库文件不存在，创建一个内存数据库
     if os.environ.get('VERCEL'):
-        conn = sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
+        if not os.path.exists(db_path):
+            # 创建内存数据库作为后备
+            conn = sqlite3.connect(':memory:')
+        else:
+            # 使用只读模式连接现有数据库
+            conn = sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
     else:
         conn = sqlite3.connect(db_path)
     
