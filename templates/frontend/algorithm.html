@@ -1569,13 +1569,127 @@
             align-items: center;
         }
         
+        /* 加载状态样式 */
+        .awards-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .awards-loading p {
+            color: rgba(224, 224, 255, 0.8);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        /* 错误状态样式 */
+        .awards-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+        }
+        
+        .error-icon i {
+            font-size: 24px;
+            color: white;
+        }
+        
+        .awards-error p {
+            color: rgba(224, 224, 255, 0.8);
+            font-size: 1.1rem;
+            margin: 0 0 20px 0;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+        }
+        
+        /* 空状态样式 */
+        .awards-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+        }
+        
+        .empty-icon i {
+            font-size: 24px;
+            color: white;
+        }
+        
+        .awards-empty p {
+            color: rgba(224, 224, 255, 0.8);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
         .awards-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(2, 1fr); /* 固定2行，每页显示6个卡片 */
             gap: 2rem;
             margin-bottom: 2rem; /* 减少底部边距，翻页器将单独设置 */
-            transition: transform 0.5s ease;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             width: 100%;
             max-width: 1200px; /* 限制最大宽度，确保居中 */
             margin-left: auto;
@@ -1583,6 +1697,34 @@
             min-height: 1000px; /* 确保容器有足够高度 */
             max-height: 1000px; /* 限制最大高度，确保每页显示固定行数 */
             position: relative; /* 添加相对定位 */
+            perspective: 1000px; /* 添加3D透视效果 */
+        }
+        
+        /* 翻页时的容器动画效果 */
+        .awards-grid.page-transitioning {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+        
+        .awards-grid.page-transitioning::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(58, 134, 255, 0.1) 0%, 
+                transparent 50%, 
+                rgba(58, 134, 255, 0.1) 100%);
+            animation: shimmer 1s ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
         /* 翻页动画样式 - 由JavaScript动态控制 */
@@ -1591,21 +1733,35 @@
         .award-card {
             display: flex; /* 改为flex，让所有卡片都占用网格空间 */
             opacity: 0;
-            transform: translateY(30px) scale(0.95);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(50px) scale(0.9) rotateX(15deg);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             visibility: hidden; /* 使用visibility来隐藏，保持网格布局 */
             pointer-events: none; /* 隐藏时禁用交互 */
             grid-column: auto; /* 确保网格位置自动分配 */
             grid-row: auto; /* 确保网格位置自动分配 */
+            transform-style: preserve-3d; /* 保持3D变换 */
+            backface-visibility: hidden; /* 隐藏背面 */
         }
         
         /* 显示当前页的卡片 */
         .award-card.show {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1) rotateX(0deg);
             visibility: visible; /* 显示时恢复可见性 */
             pointer-events: auto; /* 显示时恢复交互 */
-            animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInUp3D 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* 卡片进入动画 - 3D效果 */
+        .award-card.entering {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9) rotateX(15deg);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .award-card.entering.show {
+            opacity: 1;
+            transform: translateY(0) scale(1) rotateX(0deg);
         }
         
         /* 卡片加载动画 */
@@ -1617,6 +1773,34 @@
             100% {
                 opacity: 1;
                 transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* 3D卡片进入动画 */
+        @keyframes slideInUp3D {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9) rotateX(15deg);
+            }
+            50% {
+                opacity: 0.7;
+                transform: translateY(10px) scale(0.95) rotateX(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0deg);
+            }
+        }
+        
+        /* 卡片淡出动画 */
+        @keyframes fadeOut3D {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95) rotateX(-10deg);
             }
         }
         
@@ -1662,67 +1846,131 @@
             margin-bottom: 2rem; /* 增加底部边距，与下一节的间距 */
         }
         
-        .pagination-btn {
+        .awards-pagination .pagination-btn {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.8rem 1.5rem;
-            background: rgba(58, 134, 255, 0.1);
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.1), rgba(58, 134, 255, 0.05));
             border: 1px solid rgba(58, 134, 255, 0.3);
-            border-radius: 25px;
+            border-radius: 30px;
             color: var(--primary);
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .pagination-btn:hover {
-            background: var(--primary);
+        .awards-pagination .pagination-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .awards-pagination .pagination-btn:hover::before {
+            left: 100%;
+        }
+        
+        .awards-pagination .pagination-btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #0a0a1a;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(58, 134, 255, 0.4);
+            border-color: var(--primary);
         }
         
-        .pagination-btn:disabled {
-            opacity: 0.5;
+        .awards-pagination .pagination-btn:active {
+            transform: translateY(-1px) scale(1.02);
+            transition: all 0.1s ease;
+        }
+        
+        .awards-pagination .pagination-btn:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none;
+            background: rgba(58, 134, 255, 0.05);
+            color: rgba(58, 134, 255, 0.5);
         }
         
-        .pagination-btn:disabled:hover {
-            background: rgba(58, 134, 255, 0.1);
-            color: var(--primary);
+        .awards-pagination .pagination-btn:disabled:hover {
+            background: rgba(58, 134, 255, 0.05);
+            color: rgba(58, 134, 255, 0.5);
             transform: none;
             box-shadow: none;
+            border-color: rgba(58, 134, 255, 0.2);
         }
         
-        .page-indicators {
+        .awards-pagination .pagination-btn:disabled::before {
+            display: none;
+        }
+        
+        .awards-pagination .page-indicators {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.8rem;
             align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(58, 134, 255, 0.05);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(58, 134, 255, 0.1);
         }
         
-        .page-indicator {
-            width: 12px;
-            height: 12px;
+        .awards-pagination .page-indicator {
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background: rgba(58, 134, 255, 0.2);
-            border: 1px solid rgba(58, 134, 255, 0.3);
+            border: 2px solid rgba(58, 134, 255, 0.3);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
         }
         
-        .page-indicator.active {
+        .awards-pagination .page-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .awards-pagination .page-indicator.active {
             background: var(--primary);
             border-color: var(--primary);
-            transform: scale(1.2);
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(58, 134, 255, 0.5);
         }
         
-        .page-indicator:hover {
+        .awards-pagination .page-indicator.active::before {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .awards-pagination .page-indicator:hover {
             background: rgba(58, 134, 255, 0.4);
-            transform: scale(1.1);
+            transform: scale(1.2);
+            border-color: rgba(58, 134, 255, 0.6);
+        }
+        
+        .awards-pagination .page-indicator:hover::before {
+            width: 60%;
+            height: 60%;
         }
         
         .award-card {
@@ -2032,14 +2280,28 @@
             
             .awards-pagination {
                 flex-direction: column;
-                gap: 1rem;
+                gap: 1.5rem;
                 margin-top: 2rem; /* 增加移动端顶部边距，避免重叠 */
                 margin-bottom: 1.5rem; /* 增加移动端底部边距 */
             }
             
-            .pagination-btn {
+            .awards-pagination .pagination-btn {
                 width: 100%;
                 justify-content: center;
+                padding: 1.2rem 2rem;
+                font-size: 1rem;
+                min-height: 50px;
+            }
+            
+            .awards-pagination .page-indicators {
+                padding: 0.8rem 1.5rem;
+                gap: 1rem;
+            }
+            
+            .awards-pagination .page-indicator {
+                width: 16px;
+                height: 16px;
+                border-width: 2px;
             }
         }
         /* ========================= 竞赛获奖展示模块样式结束 ========================= */
@@ -2181,348 +2443,32 @@
         </div>
         
         <div class="awards-container">
-            <div class="awards-grid" id="awardsGrid">
-                <!-- 获奖展示卡片1 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/acm_icpc_2024.jpg" alt="ACM-ICPC 2024 金奖证书" class="award-image">
-                        <div class="award-overlay">
+            <!-- 加载状态 -->
+            <div class="awards-loading" id="awardsLoading">
+                <div class="loading-spinner"></div>
+                <p>正在加载获奖数据...</p>
+                    </div>
+                    
+            <!-- 错误状态 -->
+            <div class="awards-error" id="awardsError" style="display: none;">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                <p>加载获奖数据失败</p>
+                <button class="retry-btn" onclick="loadAwardsData()">重试</button>
+                </div>
+                
+            <!-- 空状态 -->
+            <div class="awards-empty" id="awardsEmpty" style="display: none;">
+                <div class="empty-icon">
                             <i class="fas fa-trophy"></i>
                         </div>
+                <p>暂无获奖数据</p>
                     </div>
                     
-                    <div class="award-info">
-                        <h3 class="award-title">ACM-ICPC 国际大学生程序设计竞赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🏆 2024年ACM-ICPC亚洲区域赛金奖</h4>
-                            <p><strong>获奖者：</strong>张明轩 同学</p>
-                            <p><strong>获奖等级：</strong>金奖 (Gold Medal)</p>
-                            <p><strong>比赛时间：</strong>2024年11月</p>
-                            <p><strong>比赛地点：</strong>杭州赛区</p>
-                            <p><strong>团队成绩：</strong>解决8道题目，排名第3名</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-medal"></i>
-                                <span>金奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-users"></i>
-                                <span>团队竞赛</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2024年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片2 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/pat_2024.jpg" alt="天梯赛 2024 一等奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-award"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">团体程序设计天梯赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🥇 2024年团体程序设计天梯赛一等奖</h4>
-                            <p><strong>获奖者：</strong>李雨桐 同学</p>
-                            <p><strong>获奖等级：</strong>一等奖 (First Prize)</p>
-                            <p><strong>比赛时间：</strong>2024年4月</p>
-                            <p><strong>比赛地点：</strong>全国统一考试</p>
-                            <p><strong>个人成绩：</strong>总分280分，排名前5%</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-star"></i>
-                                <span>一等奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-user"></i>
-                                <span>个人竞赛</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2024年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片3 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/lanqiao_2024.jpg" alt="蓝桥杯 2024 特等奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">蓝桥杯全国软件和信息技术专业人才大赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>👑 2024年蓝桥杯C/C++程序设计特等奖</h4>
-                            <p><strong>获奖者：</strong>王浩然 同学</p>
-                            <p><strong>获奖等级：</strong>特等奖 (Special Prize)</p>
-                            <p><strong>比赛时间：</strong>2024年6月</p>
-                            <p><strong>比赛地点：</strong>全国总决赛</p>
-                            <p><strong>比赛成绩：</strong>满分100分，全国排名第1名</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-crown"></i>
-                                <span>特等奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-code"></i>
-                                <span>C/C++组</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2024年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片4 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/ccpc_2024.jpg" alt="CCPC 2024 银奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-medal"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">中国大学生程序设计竞赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🥈 2024年CCPC全国邀请赛银奖</h4>
-                            <p><strong>获奖者：</strong>陈志强 同学</p>
-                            <p><strong>获奖等级：</strong>银奖 (Silver Medal)</p>
-                            <p><strong>比赛时间：</strong>2024年9月</p>
-                            <p><strong>比赛地点：</strong>南京赛区</p>
-                            <p><strong>团队成绩：</strong>解决7道题目，排名第8名</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-medal"></i>
-                                <span>银奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-users"></i>
-                                <span>团队竞赛</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2024年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片5 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/pat_2023.jpg" alt="天梯赛 2023 二等奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-award"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">团体程序设计天梯赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🥉 2023年团体程序设计天梯赛二等奖</h4>
-                            <p><strong>获奖者：</strong>刘雅琪 同学</p>
-                            <p><strong>获奖等级：</strong>二等奖 (Second Prize)</p>
-                            <p><strong>比赛时间：</strong>2023年4月</p>
-                            <p><strong>比赛地点：</strong>全国统一考试</p>
-                            <p><strong>个人成绩：</strong>总分260分，排名前10%</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-award"></i>
-                                <span>二等奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-user"></i>
-                                <span>个人竞赛</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2023年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片6 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/lanqiao_2023.jpg" alt="蓝桥杯 2023 一等奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">蓝桥杯全国软件和信息技术专业人才大赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🥇 2023年蓝桥杯Java程序设计一等奖</h4>
-                            <p><strong>获奖者：</strong>赵思雨 同学</p>
-                            <p><strong>获奖等级：</strong>一等奖 (First Prize)</p>
-                            <p><strong>比赛时间：</strong>2023年6月</p>
-                            <p><strong>比赛地点：</strong>全国总决赛</p>
-                            <p><strong>比赛成绩：</strong>95分，全国排名前3%</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-star"></i>
-                                <span>一等奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-code"></i>
-                                <span>Java组</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2023年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片7 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/default_award.jpg" alt="蓝桥杯 2023 省一等奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">蓝桥杯全国软件和信息技术专业人才大赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🥇 2023年蓝桥杯程序设计竞赛省一等奖</h4>
-                            <p><strong>获奖者：</strong>陈思雨 同学</p>
-                            <p><strong>获奖等级：</strong>省一等奖 (Provincial First Prize)</p>
-                            <p><strong>比赛时间：</strong>2023年4月</p>
-                            <p><strong>比赛地点：</strong>江苏省赛区</p>
-                            <p><strong>个人成绩：</strong>总分95分，排名前1%</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-medal"></i>
-                                <span>省一等奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-user"></i>
-                                <span>个人竞赛</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2023年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片8 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/default_award.jpg" alt="CCCC竞赛 2023 银奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-award"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">中国大学生计算机设计大赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🥈 2023年计算机设计大赛银奖</h4>
-                            <p><strong>获奖者：</strong>王志强 同学</p>
-                            <p><strong>获奖等级：</strong>银奖 (Silver Medal)</p>
-                            <p><strong>比赛时间：</strong>2023年8月</p>
-                            <p><strong>比赛地点：</strong>北京</p>
-                            <p><strong>项目成绩：</strong>智能推荐系统，综合评分88分</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-medal"></i>
-                                <span>银奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-users"></i>
-                                <span>团队竞赛</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2023年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 获奖展示卡片9 -->
-                <div class="award-card">
-                    <div class="award-image-container">
-                        <img src="/static/images/awards/default_award.jpg" alt="数学建模竞赛 2024 二等奖证书" class="award-image">
-                        <div class="award-overlay">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="award-info">
-                        <h3 class="award-title">全国大学生数学建模竞赛</h3>
-                        
-                        <div class="award-details">
-                            <h4>🥉 2024年数学建模竞赛二等奖</h4>
-                            <p><strong>获奖者：</strong>刘晓敏 同学</p>
-                            <p><strong>获奖等级：</strong>二等奖 (Second Prize)</p>
-                            <p><strong>比赛时间：</strong>2024年9月</p>
-                            <p><strong>比赛地点：</strong>全国统一竞赛</p>
-                            <p><strong>团队成绩：</strong>优化算法模型，排名前15%</p>
-                        </div>
-                        
-                        <div class="award-meta">
-                            <div class="award-meta-item">
-                                <i class="fas fa-medal"></i>
-                                <span>二等奖</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-users"></i>
-                                <span>团队竞赛</span>
-                            </div>
-                            <div class="award-meta-item">
-                                <i class="fas fa-calendar"></i>
-                                <span>2024年</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- 获奖数据容器 -->
+            <div class="awards-grid" id="awardsGrid" style="display: none;">
+                <!-- 动态生成的获奖卡片将在这里显示 -->
             </div>
             
             <!-- 翻页控制 -->
@@ -4402,10 +4348,75 @@ public:
                     this.nextBtn.addEventListener('click', () => this.nextPage());
                 }
                 
+                // 添加键盘支持
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft' && this.currentPage > 1) {
+                        this.prevPage();
+                    } else if (e.key === 'ArrowRight' && this.currentPage < this.totalPages) {
+                        this.nextPage();
+                    }
+                });
+                
+                // 添加触摸手势支持
+                this.addTouchSupport();
+                
                 // 监听窗口大小改变
                 window.addEventListener('resize', () => {
                     this.updatePagination();
                 });
+            }
+            
+            // 添加触摸手势支持
+            addTouchSupport() {
+                let startX = 0;
+                let startY = 0;
+                let isScrolling = false;
+                
+                this.awardsGrid.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    isScrolling = false;
+                }, { passive: true });
+                
+                this.awardsGrid.addEventListener('touchmove', (e) => {
+                    if (!startX || !startY) return;
+                    
+                    const currentX = e.touches[0].clientX;
+                    const currentY = e.touches[0].clientY;
+                    
+                    const diffX = Math.abs(currentX - startX);
+                    const diffY = Math.abs(currentY - startY);
+                    
+                    // 判断是否为水平滑动
+                    if (diffX > diffY && diffX > 50) {
+                        isScrolling = true;
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                this.awardsGrid.addEventListener('touchend', (e) => {
+                    if (!startX || !startY || !isScrolling) return;
+                    
+                    const endX = e.changedTouches[0].clientX;
+                    const diffX = startX - endX;
+                    
+                    // 滑动距离阈值
+                    const threshold = 100;
+                    
+                    if (Math.abs(diffX) > threshold) {
+                        if (diffX > 0 && this.currentPage < this.totalPages) {
+                            // 向左滑动，下一页
+                            this.nextPage();
+                        } else if (diffX < 0 && this.currentPage > 1) {
+                            // 向右滑动，上一页
+                            this.prevPage();
+                        }
+                    }
+                    
+                    startX = 0;
+                    startY = 0;
+                    isScrolling = false;
+                }, { passive: true });
             }
             
             createPageIndicators() {
@@ -4424,12 +4435,16 @@ public:
             updatePagination() {
                 console.log(`更新竞赛获奖翻页: 当前页=${this.currentPage}, 总页数=${this.totalPages}, 总卡片数=${this.totalCards}`);
                 
+                // 添加容器过渡动画
+                this.awardsGrid.classList.add('page-transitioning');
+                
                 // 获取所有卡片
                 const cards = this.awardsGrid.querySelectorAll('.award-card');
                 console.log(`找到${cards.length}个获奖卡片`);
                 
                 if (cards.length === 0) {
                     console.warn('没有找到获奖卡片，跳过翻页更新');
+                    this.awardsGrid.classList.remove('page-transitioning');
                     return;
                 }
                 
@@ -4447,14 +4462,6 @@ public:
                 this.awardsGrid.style.display = 'grid';
                 this.awardsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
                 this.awardsGrid.style.gridTemplateRows = 'repeat(2, 1fr)';
-                
-                // 隐藏所有卡片
-                cards.forEach((card, index) => {
-                    card.classList.remove('show');
-                    card.style.visibility = 'hidden';
-                    card.style.pointerEvents = 'none';
-                    console.log(`隐藏卡片 ${index}: ${card.querySelector('.award-title')?.textContent || '无标题'}`);
-                });
                 
                 // 显示当前页的卡片（带动画效果）
                 const startIndex = (this.currentPage - 1) * this.cardsPerPage;
@@ -4521,20 +4528,34 @@ public:
                 }
             }
             
-            // 简化的显示卡片方法 - 确保每页都从左上角开始
+            // 优化的显示卡片方法 - 添加流畅的动画效果
             showCardsWithAnimation(cards, startIndex, endIndex) {
                 console.log(`显示卡片: ${startIndex} - ${endIndex - 1}`);
                 
-                // 先隐藏所有卡片
-                cards.forEach(card => {
+                // 先隐藏所有卡片，添加淡出动画
+                cards.forEach((card, index) => {
+                    if (card.classList.contains('show')) {
+                        card.style.animation = 'fadeOut3D 0.3s ease-out forwards';
+                        setTimeout(() => {
                     card.classList.remove('show');
                     card.style.visibility = 'hidden';
                     card.style.pointerEvents = 'none';
+                            card.style.animation = '';
                     // 重置网格位置，确保从左上角开始
                     card.style.gridColumn = 'auto';
                     card.style.gridRow = 'auto';
+                        }, 300);
+                    } else {
+                        card.classList.remove('show');
+                        card.style.visibility = 'hidden';
+                        card.style.pointerEvents = 'none';
+                        card.style.gridColumn = 'auto';
+                        card.style.gridRow = 'auto';
+                    }
                 });
                 
+                // 延迟显示新卡片，确保淡出动画完成
+                setTimeout(() => {
                 // 显示当前页的卡片（从左上角开始，按顺序填充）
                 for (let i = startIndex; i < endIndex; i++) {
                     if (cards[i]) {
@@ -4547,14 +4568,30 @@ public:
                         cards[i].style.gridRow = row;
                         cards[i].style.gridColumn = col;
                         
-                        // 显示卡片
+                            // 添加进入动画类
+                            cards[i].classList.add('entering');
+                            
+                            // 延迟显示每个卡片，创建波浪效果
+                            setTimeout(() => {
                         cards[i].classList.add('show');
                         cards[i].style.visibility = 'visible';
                         cards[i].style.pointerEvents = 'auto';
+                                
+                                // 移除进入动画类
+                                setTimeout(() => {
+                                    cards[i].classList.remove('entering');
+                                }, 600);
                         
                         console.log(`显示卡片 ${i} 在位置 (${row}, ${col}): ${cards[i].querySelector('.award-title')?.textContent || '无标题'}`);
+                            }, pagePosition * 100); // 每个卡片延迟100ms显示
+                        }
                     }
-                }
+                    
+                    // 移除容器过渡动画
+                    setTimeout(() => {
+                        this.awardsGrid.classList.remove('page-transitioning');
+                    }, 800); // 等待所有卡片动画完成
+                }, 350); // 等待淡出动画完成
             }
             
             // 重新初始化方法，用于数据更新后调用
@@ -4733,6 +4770,9 @@ public:
             try {
                 console.log('🚀 开始加载竞赛获奖数据...');
                 
+                // 显示加载状态
+                showAwardsLoading();
+                
                 // 添加时间戳参数避免缓存
                 const timestamp = `?t=${Date.now()}`;
                 
@@ -4760,20 +4800,72 @@ public:
                         renderAwardsData(awards);
                         console.log(`✅ 成功加载 ${awards.length} 个获奖记录`);
                     } else {
-                        console.log('没有获奖数据，保持静态内容');
-                        // 即使没有数据，也要初始化翻页功能
-                        initAwardsPagination();
+                        console.log('没有获奖数据');
+                        showAwardsEmpty();
                     }
                 } else {
                     console.error('加载竞赛获奖数据失败:', response.status);
-                    // 如果API失败，保持原有的静态内容，但初始化翻页功能
-                    initAwardsPagination();
+                    showAwardsError();
                 }
             } catch (error) {
                 console.error('加载竞赛获奖数据出错:', error);
-                // 如果API失败，保持原有的静态内容，但初始化翻页功能
-                initAwardsPagination();
+                showAwardsError();
             }
+        }
+        
+        // 显示加载状态
+        function showAwardsLoading() {
+            hideAllAwardsStates();
+            const loading = document.getElementById('awardsLoading');
+            if (loading) {
+                loading.style.display = 'flex';
+            }
+        }
+        
+        // 显示错误状态
+        function showAwardsError() {
+            hideAllAwardsStates();
+            const error = document.getElementById('awardsError');
+            if (error) {
+                error.style.display = 'flex';
+            }
+        }
+        
+        // 显示空状态
+        function showAwardsEmpty() {
+            hideAllAwardsStates();
+            const empty = document.getElementById('awardsEmpty');
+            if (empty) {
+                empty.style.display = 'flex';
+            }
+        }
+        
+        // 显示数据状态
+        function showAwardsData() {
+            hideAllAwardsStates();
+            const grid = document.getElementById('awardsGrid');
+            const pagination = document.querySelector('.awards-pagination');
+            if (grid) {
+                grid.style.display = 'grid';
+            }
+            if (pagination) {
+                pagination.style.display = 'flex';
+            }
+        }
+        
+        // 隐藏所有状态
+        function hideAllAwardsStates() {
+            const loading = document.getElementById('awardsLoading');
+            const error = document.getElementById('awardsError');
+            const empty = document.getElementById('awardsEmpty');
+            const grid = document.getElementById('awardsGrid');
+            const pagination = document.querySelector('.awards-pagination');
+            
+            if (loading) loading.style.display = 'none';
+            if (error) error.style.display = 'none';
+            if (empty) empty.style.display = 'none';
+            if (grid) grid.style.display = 'none';
+            if (pagination) pagination.style.display = 'none';
         }
 
         // 渲染竞赛获奖数据
@@ -4781,8 +4873,7 @@ public:
             const awardsGrid = document.getElementById('awardsGrid');
             if (!awardsGrid || !awards || awards.length === 0) {
                 console.log('没有获奖数据或容器不存在');
-                // 即使没有数据，也要初始化翻页功能以处理静态内容
-                initAwardsPagination();
+                showAwardsEmpty();
                 return;
             }
             
@@ -4844,6 +4935,9 @@ public:
             }).join('');
             
             console.log('✅ 竞赛获奖数据渲染完成');
+            
+            // 显示数据状态
+            showAwardsData();
             
             // 重新初始化翻页功能
             initAwardsPagination();

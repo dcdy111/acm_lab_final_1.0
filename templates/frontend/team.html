@@ -2336,11 +2336,13 @@ function getApiUrl(path) {
                 });
                 
                 // 添加缓存控制，避免浏览器缓存
-                const res = await fetch(getApiUrl('/api/team'), {
+                const timestamp = Date.now();
+                const res = await fetch(getApiUrl(`/api/team?t=${timestamp}`), {
                     method: 'GET',
                     headers: {
-                        'Cache-Control': 'no-cache',
-                        'Pragma': 'no-cache'
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
                     }
                 });
                 
@@ -2475,6 +2477,9 @@ function getApiUrl(path) {
                         <button onclick="loadTeamData()" class="btn" style="margin-top: 1rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer;">
                             🔄 重新加载数据
                         </button>
+                        <button onclick="forceRefreshTeamData()" class="btn" style="margin-top: 0.5rem; background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer;">
+                            🚀 强制刷新数据
+                        </button>
                     </div>
                 `;
                 return;
@@ -2493,6 +2498,17 @@ function getApiUrl(path) {
                 const members = gradeInfo ? gradeInfo.members : [];
                 
                 console.log(`🎯 渲染年级 ${gradeName}:`, gradeInfo, '成员数量:', members ? members.length : 0);
+                
+                // 特别调试2025级数据
+                if (gradeName === '2025级') {
+                    console.log('🔍 2025级调试信息:');
+                    console.log('  - gradeInfo:', gradeInfo);
+                    console.log('  - members:', members);
+                    console.log('  - members.length:', members ? members.length : 0);
+                    if (members && members.length > 0) {
+                        console.log('  - 第一个成员:', members[0]);
+                    }
+                }
                 
                 // 创建年级分组
                 const gradeGroup = document.createElement('div');
@@ -3800,6 +3816,26 @@ function getApiUrl(path) {
         // 添加手动刷新功能
         window.refreshTeamData = function() {
             console.log('🔄 手动刷新团队数据...');
+            if (typeof loadTeamDataWithRetry === 'function') {
+                loadTeamDataWithRetry();
+            } else {
+                console.error('❌ loadTeamDataWithRetry 函数不存在');
+            }
+        };
+        
+        // 添加强制刷新功能
+        window.forceRefreshTeamData = function() {
+            console.log('🚀 强制刷新团队数据...');
+            
+            // 清除所有缓存
+            cacheManager.clear();
+            window.lastTeamData = null;
+            
+            // 重置页面状态
+            pageDataLoaded = false;
+            teamDataLoading = false;
+            
+            // 强制重新加载数据
             if (typeof loadTeamDataWithRetry === 'function') {
                 loadTeamDataWithRetry();
             } else {
