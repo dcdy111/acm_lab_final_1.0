@@ -2,18 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "wsgi.py",
+      "src": "test_wsgi.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/wsgi.py"
+      "dest": "/test_wsgi.py"
     }
   ],
   "env": {

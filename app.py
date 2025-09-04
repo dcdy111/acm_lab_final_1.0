@@ -1569,24 +1569,5 @@ if __name__ == '__main__':
     # socketio.run(app, debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)  # Vercel不支持WebSocket
     app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)
 
-# Vercel WSGI 配置
-if __name__ == "__main__":
-    # 本地开发时运行
-    pass
-else:
-    # Vercel 部署时使用
-    # 修复Vercel Python运行时兼容性问题
-    import sys
-    import os
-    
-    # 确保在Vercel环境中正确设置
-    if os.environ.get('VERCEL'):
-        # Vercel环境下的特殊处理
-        try:
-            # 创建WSGI应用
-            handler = app
-        except Exception as e:
-            print(f"Vercel handler creation error: {e}")
-            handler = app
-    else:
-        handler = app
+# Vercel WSGI 配置 - 简化版本
+# 在Vercel环境中，app对象会被wsgi.py正确导入和使用
