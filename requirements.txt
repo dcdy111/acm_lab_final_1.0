@@ -13,5 +13,5 @@ python-multipart==0.0.6
 # psutil==5.9.6  # Vercel无服务器环境不需要
 # requests==2.31.0  # 可选依赖，按需添加
 
-# Vercel兼容性修复
-gunicorn==21.2.0 
+# Vercel兼容性修复 - 移除gunicorn，Vercel有自己的WSGI服务器
+# gunicorn==21.2.0 

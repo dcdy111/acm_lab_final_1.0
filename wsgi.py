@@ -1,4 +1,6 @@
-# WSGI入口文件 - 用于Vercel部署
+# Vercel WSGI 入口文件
+# 这个文件专门用于Vercel部署，避免兼容性问题
+
 import os
 import sys
 
@@ -8,9 +10,13 @@ sys.path.insert(0, os.path.dirname(__file__))
 # 导入Flask应用
 from app import app
 
-# Vercel需要这个变量
-handler = app
+# Vercel WSGI处理器
+def handler(request):
+    """Vercel WSGI处理器"""
+    return app(request.environ, request.start_response)
 
-# 如果直接运行此文件，启动开发服务器
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+# 直接导出app作为WSGI应用
+application = app
+
+# 为了兼容性，也导出handler
+__all__ = ['application', 'handler']
