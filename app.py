@@ -10,7 +10,7 @@ import sqlite3
 import json
 from datetime import datetime
 from flask import Blueprint
-from flask_socketio import SocketIO, emit
+# from flask_socketio import SocketIO, emit  # Vercel不支持WebSocket
 # 暂时注释掉有问题的API导入
 from api.innovation import innovation_bp
 # from api.notifications import notifications_bp
@@ -321,44 +321,44 @@ DATABASE = 'acm_lab.db'
 # 移除SQLAlchemy初始化
 # db.init_app(app)
 
-# 初始化SocketIO
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', logger=True, engineio_logger=True)
-app.extensions['socketio'] = socketio
+# 初始化SocketIO - Vercel不支持WebSocket
+# socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', logger=True, engineio_logger=True)
+# app.extensions['socketio'] = socketio  # Vercel不支持WebSocket
 
-# WebSocket事件处理
-@socketio.on('connect')
-def handle_connect():
-    """客户端连接时触发"""
-    print(f"客户端已连接: {request.sid}")
-    from flask_socketio import join_room
-    join_room('default')
-    emit('connected', {'data': '连接成功'})
+# WebSocket事件处理 - Vercel不支持WebSocket
+# @socketio.on('connect')
+# def handle_connect():
+#     """客户端连接时触发"""
+#     print(f"客户端已连接: {request.sid}")
+#     from flask_socketio import join_room
+#     join_room('default')
+#     emit('connected', {'data': '连接成功'})
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    """客户端断开连接时触发"""
-    print(f"客户端已断开: {request.sid}")
-    from flask_socketio import leave_room, rooms
-    # 从所有房间中移除客户端
-    current_rooms = list(rooms())
-    for room in current_rooms:
-        if room != request.sid:  # 不要离开自己的房间
-            leave_room(room)
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     """客户端断开连接时触发"""
+#     print(f"客户端已断开: {request.sid}")
+#     from flask_socketio import leave_room, rooms
+#     # 从所有房间中移除客户端
+#     current_rooms = list(rooms())
+#     for room in current_rooms:
+#         if room != request.sid:  # 不要离开自己的房间
+#             leave_room(room)
 
-@socketio.on('join_page')
-def handle_join_page(data):
-    """客户端加入特定页面"""
-    page = data.get('page', 'home')
-    print(f"客户端 {request.sid} 加入页面: {page}")
-    from flask_socketio import join_room, leave_room, rooms
-    # 先离开之前的页面房间
-    current_rooms = list(rooms())
-    for room in current_rooms:
-        if room != request.sid and room != 'default':
-            leave_room(room)
-    # 加入新页面房间
-    join_room(page)
-    emit('joined_page', {'page': page})
+# @socketio.on('join_page')
+# def handle_join_page(data):
+#     """客户端加入特定页面"""
+#     page = data.get('page', 'home')
+#     print(f"客户端 {request.sid} 加入页面: {page}")
+#     from flask_socketio import join_room, leave_room, rooms
+#     # 先离开之前的页面房间
+#     current_rooms = list(rooms())
+#     for room in current_rooms:
+#         if room != request.sid and room != 'default':
+#             leave_room(room)
+#     # 加入新页面房间
+#     join_room(page)
+#     emit('joined_page', {'page': page})
 
 # 通知函数已移动到 socket_utils.py 模块中
 def notify_page_refresh(page_type, data=None):
@@ -1491,11 +1491,11 @@ def test_sync():
 def test_socket():
     """测试Socket.IO连接"""
     try:
-        # 发送测试消息到所有连接的客户端
-        socketio.emit('test_message', {
-            'message': 'Hello from server!',
-            'timestamp': datetime.now().isoformat()
-        })
+        # 发送测试消息到所有连接的客户端 - Vercel不支持WebSocket
+        # socketio.emit('test_message', {
+        #     'message': 'Hello from server!',
+        #     'timestamp': datetime.now().isoformat()
+        # })
         return jsonify({"success": True, "message": "测试消息已发送"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -1544,4 +1544,11 @@ if __name__ == '__main__':
     import os
     debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
     port = int(os.environ.get('FLASK_PORT', 5000))
-    socketio.run(app, debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)
+    # socketio.run(app, debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)  # Vercel不支持WebSocket
+    app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)
+
+# Vercel 入口点
+def handler(request):
+    def start_response(status, headers):
+        pass
+    return app(request.environ, start_response)
