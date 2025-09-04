@@ -1568,3 +1568,11 @@ if __name__ == '__main__':
     port = int(os.environ.get('FLASK_PORT', 5000))
     # socketio.run(app, debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)  # Vercel不支持WebSocket
     app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)
+
+# Vercel WSGI 配置
+if __name__ == "__main__":
+    # 本地开发时运行
+    pass
+else:
+    # Vercel 部署时使用
+    handler = app
