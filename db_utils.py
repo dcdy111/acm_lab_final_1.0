@@ -13,6 +13,8 @@ def get_db_path():
     if os.environ.get('VERCEL'):
         # 在Vercel环境中，数据库文件位于项目根目录
         db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'acm_lab.db')
+        print(f"🔍 Vercel环境数据库路径: {db_path}")
+        print(f"🔍 数据库文件存在: {os.path.exists(db_path)}")
     else:
         # 本地开发环境
         db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'acm_lab.db')
@@ -28,14 +30,14 @@ def get_db():
     """
     db_path = get_db_path()
     
-    # 在Vercel环境中，如果数据库文件不存在，创建一个内存数据库
+    # 在Vercel环境中，如果数据库文件不存在，创建一个可写的临时数据库
     if os.environ.get('VERCEL'):
         if not os.path.exists(db_path):
-            # 创建内存数据库作为后备
-            conn = sqlite3.connect(':memory:')
+            # 创建可写的临时数据库
+            conn = sqlite3.connect(db_path)
         else:
-            # 使用只读模式连接现有数据库
-            conn = sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
+            # 使用可写模式连接现有数据库
+            conn = sqlite3.connect(db_path)
     else:
         conn = sqlite3.connect(db_path)
     
@@ -52,7 +54,12 @@ def get_db():
 
 def init_db():
     """初始化数据库表结构"""
+    print("🔄 开始初始化数据库...")
+    db_path = get_db_path()
+    print(f"📁 数据库路径: {db_path}")
+    
     with get_db() as conn:
+        print("✅ 数据库连接成功")
         # 创建用户表
         conn.execute('''
             CREATE TABLE IF NOT EXISTS users (
@@ -673,4 +680,16 @@ def init_db():
             print(f"插入项目概览数据时出错: {e}")
         
         conn.commit()
-        print("数据库初始化完成") 
+        
+        # 验证关键表是否存在
+        print("🔍 验证数据库表...")
+        required_tables = ['users', 'team_members', 'grades', 'research_areas', 'innovation_stats']
+        for table in required_tables:
+            try:
+                cursor = conn.execute(f"SELECT COUNT(*) FROM {table}")
+                count = cursor.fetchone()[0]
+                print(f"✅ 表 {table}: {count} 条记录")
+            except Exception as e:
+                print(f"❌ 表 {table} 验证失败: {e}")
+        
+        print("📊 数据库初始化完成") 

@@ -20,6 +20,9 @@ from api.innovation import innovation_bp
 from functools import lru_cache
 import time
 
+# 静态文件路由将在app创建后定义
+
+
 # 认证装饰器
 def require_auth(f):
     """要求用户认证的装饰器，支持自动登录"""
@@ -543,6 +546,16 @@ projects_data = []
 applications_data = []
 team_data = []
 research_data = []
+
+# 静态文件路由
+@app.route('/favicon.ico')
+def favicon():
+    """处理favicon.ico请求"""
+    try:
+        return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    except:
+        # 如果找不到favicon.ico，返回一个简单的响应
+        return '', 204
 
 # 健康检查端点
 @app.route('/health')
@@ -1523,13 +1536,15 @@ except Exception as e:
     # 在Vercel环境中，如果数据库初始化失败，继续运行
     if os.environ.get('VERCEL'):
         print("🔄 Vercel环境：跳过数据库初始化错误")
+        # 在Vercel环境中，尝试重新初始化数据库
+        try:
+            from db_utils import init_db
+            init_db()
+            print("🔄 Vercel环境：数据库重新初始化成功")
+        except Exception as e2:
+            print(f"🔄 Vercel环境：数据库重新初始化失败: {e2}")
     else:
         raise e
-
-# Vercel部署入口点
-def handler(request):
-    """Vercel无服务器函数处理器"""
-    return app(request.environ, lambda status, headers: None)
 
 # 导出应用实例供Vercel使用
 application = app
@@ -1539,6 +1554,7 @@ def wsgi_handler(environ, start_response):
     """Vercel WSGI处理器"""
     return app(environ, start_response)
 
+# 开发环境启动代码
 if __name__ == '__main__':
     print("=" * 60)
     print("🚀 ACM算法研究实验室管理系统")
@@ -1568,6 +1584,3 @@ if __name__ == '__main__':
     port = int(os.environ.get('FLASK_PORT', 5000))
     # socketio.run(app, debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)  # Vercel不支持WebSocket
     app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)
-
-# Vercel WSGI 配置 - 简化版本
-# 在Vercel环境中，app对象会被wsgi.py正确导入和使用

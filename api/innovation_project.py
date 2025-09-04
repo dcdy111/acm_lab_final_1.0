@@ -3,7 +3,7 @@ from db_utils import get_db
 import os
 # from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
 from datetime import datetime
-from .utils import allowed_file
+from api.utils import allowed_file
 
 innovation_project_bp = Blueprint('innovation_project', __name__)
 

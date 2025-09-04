@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, abort, session
 from db_utils import get_db
 import os
 from datetime import datetime
+from api.utils import allowed_file
 # 导入Socket.IO通知工具
 # from socket_utils import notify_team_update  # Vercel 不支持 WebSocket
 
@@ -9,7 +10,6 @@ advisor_bp = Blueprint('advisor', __name__)
 
 # 文件上传配置
 UPLOAD_FOLDER = 'static/uploads/advisors'
-from .utils import allowed_file
 
 @advisor_bp.route('/advisors', methods=['GET'])
 def get_advisors():
