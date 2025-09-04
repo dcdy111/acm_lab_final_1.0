@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, abort, session
 from db_utils import get_db
 import os
-from socket_utils import notify_page_refresh
+# from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
 from datetime import datetime
 from .utils import allowed_file
 
@@ -102,7 +102,7 @@ def create_innovation_project():
             print(f"✅ 科创成果创建成功: {title}")
             
             # 通知前端刷新
-            notify_page_refresh('innovation', {'action': 'created', 'project_id': project_id})
+            # notify_page_refresh('innovation', {'action': 'created', 'project_id': project_id})  # Vercel 不支持 WebSocket
             
             return jsonify({
                 "success": True,
@@ -184,7 +184,7 @@ def update_innovation_project(project_id):
                 print(f"✅ 科创成果更新成功: ID={project_id}")
                 
                 # 通知前端刷新
-                notify_page_refresh('innovation', {'action': 'updated', 'project_id': project_id})
+                # notify_page_refresh('innovation', {'action': 'updated', 'project_id': project_id})  # Vercel 不支持 WebSocket
                 
                 return jsonify({"success": True, "message": "更新成功"})
             else:
@@ -215,7 +215,7 @@ def delete_innovation_project(project_id):
             print(f"✅ 科创成果删除成功: {project['title']}")
             
             # 通知前端刷新
-            notify_page_refresh('innovation', {'action': 'deleted', 'project_id': project_id})
+            # notify_page_refresh('innovation', {'action': 'deleted', 'project_id': project_id})  # Vercel 不支持 WebSocket
             
             return jsonify({"success": True, "message": "删除成功"})
             
@@ -248,7 +248,7 @@ def reorder_innovation_projects():
             print(f"✅ 科创成果排序更新成功，共{len(project_ids)}个项目")
             
             # 通知前端刷新
-            notify_page_refresh('innovation', {'action': 'reordered', 'project_ids': project_ids})
+            # notify_page_refresh('innovation', {'action': 'reordered', 'project_ids': project_ids})  # Vercel 不支持 WebSocket
             
             return jsonify({"success": True, "message": "排序更新成功"})
             

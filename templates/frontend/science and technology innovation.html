@@ -2652,17 +2652,8 @@
                 }
             });
             
-            // 监听Socket.IO实时更新
-            if (typeof socket !== 'undefined' && socket) {
-                socket.on('page_refresh', function(data) {
-                    console.log('收到Socket.IO页面刷新通知:', data);
-                    
-                    if (data.page === 'innovation' || data.page === 'all') {
-                        console.log('刷新科创页面数据...');
-                        loadInnovationData(true);
-                    }
-                });
-            }
+            // Socket.IO功能已移除，仅支持页面刷新加载数据
+            console.log('📄 科技创新页面数据加载完成，实时同步功能已禁用');
         });
     </script>
     

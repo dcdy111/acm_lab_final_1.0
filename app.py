@@ -362,14 +362,15 @@ DATABASE = 'acm_lab.db'
 
 # 通知函数已移动到 socket_utils.py 模块中
 def notify_page_refresh(page_type, data=None):
-    """通知特定页面刷新（兼容性函数）"""
-    try:
-        from socket_utils import notify_page_refresh as notify
-        notify(page_type, data)
-    except Exception as e:
-        print(f"通知页面刷新失败: {e}")
-        # 暂时忽略通知错误，不影响主要功能
-        pass
+    """通知特定页面刷新（兼容性函数） - Vercel 不支持 WebSocket，已禁用"""
+    # try:
+    #     from socket_utils import notify_page_refresh as notify  # Vercel 不支持 WebSocket
+    #     notify(page_type, data)
+    # except Exception as e:
+    #     print(f"通知页面刷新失败: {e}")
+    #     # 暂时忽略通知错误，不影响主要功能
+    #     pass
+    pass
 
 # 使用独立的数据库工具模块
 from db_utils import get_db, init_db
@@ -1242,7 +1243,7 @@ def create_paper_api():
         paper = get_paper_by_id(paper_id)
         
         # 通知前端刷新论文页面
-        notify_page_refresh('papers', paper)
+        # notify_page_refresh('papers', paper)  # Vercel 不支持 WebSocket
         
         return jsonify(paper), 201
     except Exception as e:
@@ -1291,7 +1292,7 @@ def update_paper_api(paper_id: int):
         updated_paper = get_paper_by_id(paper_id)
         
         # 通知前端刷新论文页面
-        notify_page_refresh('papers', updated_paper)
+        # notify_page_refresh('papers', updated_paper)  # Vercel 不支持 WebSocket
         
         return jsonify(updated_paper)
     except Exception as e:
@@ -1313,7 +1314,7 @@ def delete_paper_api(paper_id: int):
         delete_paper(paper_id)
         
         # 通知前端刷新论文页面
-        notify_page_refresh('papers', {'deleted': True, 'paper_id': paper_id})
+        # notify_page_refresh('papers', {'deleted': True, 'paper_id': paper_id})  # Vercel 不支持 WebSocket
         
         return jsonify({"success": True})
     except Exception as e:
@@ -1339,7 +1340,7 @@ def reorder_papers_api():
         reorder_papers(paper_ids)
         
         # 通知前端刷新论文页面
-        notify_page_refresh('papers', {'reordered': True, 'paper_ids': paper_ids})
+        # notify_page_refresh('papers', {'reordered': True, 'paper_ids': paper_ids})  # Vercel 不支持 WebSocket
         
         return jsonify({"success": True, "message": "排序更新成功"})
     except Exception as e:
@@ -1489,16 +1490,17 @@ def test_sync():
 
 @app.route('/api/test-socket')
 def test_socket():
-    """测试Socket.IO连接"""
-    try:
-        # 发送测试消息到所有连接的客户端 - Vercel不支持WebSocket
-        # socketio.emit('test_message', {
-        #     'message': 'Hello from server!',
-        #     'timestamp': datetime.now().isoformat()
-        # })
-        return jsonify({"success": True, "message": "测试消息已发送"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    """测试Socket.IO连接 - Vercel 不支持 WebSocket，已禁用"""
+    # try:
+    #     # 发送测试消息到所有连接的客户端
+    #     socketio.emit('test_message', {
+    #         'message': 'Hello from server!',
+    #         'timestamp': datetime.now().isoformat()
+    #     })
+    #     return jsonify({"success": True, "message": "测试消息已发送"})
+    # except Exception as e:
+    #     return jsonify({"error": str(e)}), 500
+    return jsonify({"success": False, "message": "WebSocket 功能在 Vercel 上不可用"})
 
 
 # 初始化数据库（在模块加载时执行）
@@ -1546,9 +1548,3 @@ if __name__ == '__main__':
     port = int(os.environ.get('FLASK_PORT', 5000))
     # socketio.run(app, debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)  # Vercel不支持WebSocket
     app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=False)
-
-# Vercel 入口点
-def handler(request):
-    def start_response(status, headers):
-        pass
-    return app(request.environ, start_response)

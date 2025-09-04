@@ -2006,31 +2006,27 @@
         }
     </script>
     
-    <!-- Socket.IO客户端 -->
-    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
-    <script src="/static/socket-client.js"></script>
+    <!-- Socket.IO功能已移除 - 仅支持页面刷新加载数据 -->
     
     <!-- 通知详情页面实时更新功能 -->
     <script>
         // 当前通知ID
         const currentNotificationId = parseInt('{{ notification.id }}');
         
-        // 初始化Socket.IO实时更新
+        // Socket.IO功能已移除，直接初始化页面
         document.addEventListener('DOMContentLoaded', function() {
             // 设置当前页面类型
             if (typeof setCurrentPage === 'function') {
                 setCurrentPage('notification_detail');
             }
             
-            // 初始化Socket.IO连接
-            if (typeof initSocketIO === 'function') {
-                initSocketIO();
+            // Socket.IO功能已移除，直接加载数据
+            console.log('📄 通知详情页面数据加载完成，实时同步功能已禁用');
             }
             
-            // 添加实时连接状态指示器
-            addConnectionStatusIndicator();
             
-            // 监听通知更新事件
+            // Socket.IO功能已移除，无需监听通知更新事件
+            /*
             if (typeof socket !== 'undefined' && socket) {
                 socket.on('page_refresh', function(data) {
                     console.log('收到页面刷新通知:', data);
@@ -2082,8 +2078,9 @@
                     }
                 });
             }
+            */
             
-            console.log('通知详情页面 - Socket.IO实时更新已初始化');
+            console.log('通知详情页面 - Socket.IO功能已禁用');
         });
         
         // 刷新通知内容
@@ -2257,69 +2254,7 @@
             }
         }
         
-        // 添加实时连接状态指示器
-        function addConnectionStatusIndicator() {
-            const indicator = document.createElement('div');
-            indicator.id = 'connectionStatus';
-            indicator.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 20px;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                padding: 8px 12px;
-                border-radius: 20px;
-                font-size: 12px;
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                transition: all 0.3s ease;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            `;
-            
-            // 默认状态
-            updateConnectionStatus('连接中...', '#ffa500', '⟳');
-            
-            document.body.appendChild(indicator);
-            
-            // 监听Socket.IO连接状态
-            if (typeof socket !== 'undefined' && socket) {
-                socket.on('connect', () => {
-                    updateConnectionStatus('实时同步已连接', '#22c55e', '✓');
-                });
-                
-                socket.on('disconnect', () => {
-                    updateConnectionStatus('连接已断开', '#ef4444', '✕');
-                });
-                
-                socket.on('connect_error', () => {
-                    updateConnectionStatus('连接错误', '#ef4444', '⚠');
-                });
-            }
-            
-            // 5秒后自动隐藏（如果连接成功）
-            setTimeout(() => {
-                const indicator = document.getElementById('connectionStatus');
-                if (indicator && indicator.textContent.includes('已连接')) {
-                    indicator.style.opacity = '0.3';
-                    indicator.style.transform = 'scale(0.9)';
-                }
-            }, 5000);
-        }
         
-        // 更新连接状态
-        function updateConnectionStatus(message, color, icon) {
-            const indicator = document.getElementById('connectionStatus');
-            if (indicator) {
-                indicator.innerHTML = `
-                    <span style="color: ${color}; font-weight: bold;">${icon}</span>
-                    <span>${message}</span>
-                `;
-                indicator.style.borderColor = color;
-            }
-        }
         
         // 显示更新通知
         function showUpdateNotification(message, type = 'info') {

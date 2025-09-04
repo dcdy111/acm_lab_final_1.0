@@ -9,7 +9,7 @@ from datetime import datetime
 from werkzeug.security import check_password_hash
 import tempfile
 import re
-from socket_utils import notify_page_refresh
+# from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
 
 notifications_bp = Blueprint('notifications', __name__, url_prefix='/api/notifications')
 
@@ -295,7 +295,7 @@ def create_notification():
         conn.commit()
         
         # 通知前端刷新动态页面
-        notify_page_refresh('dynamic', {'created': True, 'notification_id': notification_id})
+        # notify_page_refresh('dynamic', {'created': True, 'notification_id': notification_id})  # Vercel 不支持 WebSocket
         
         return jsonify({"id": notification_id, "message": "通知创建成功"}), 201
         
@@ -397,7 +397,7 @@ def update_notification(notification_id):
         conn.commit()
         
         # 通知前端刷新动态页面
-        notify_page_refresh('dynamic', {'updated': True, 'notification_id': notification_id})
+        # notify_page_refresh('dynamic', {'updated': True, 'notification_id': notification_id})  # Vercel 不支持 WebSocket
         
         return jsonify({"message": "通知更新成功"}), 200
         
@@ -438,7 +438,7 @@ def delete_notification(notification_id):
                 print(f"删除源文件失败: {e}")
         
         # 通知前端刷新动态页面
-        notify_page_refresh('dynamic', {'deleted': True, 'notification_id': notification_id})
+        # notify_page_refresh('dynamic', {'deleted': True, 'notification_id': notification_id})  # Vercel 不支持 WebSocket
         
         return jsonify({"message": "通知删除成功"})
         
@@ -471,7 +471,7 @@ def reorder_notifications():
         conn.commit()
         
         # 通知前端刷新动态页面
-        notify_page_refresh('dynamic', {'reordered': True})
+        # notify_page_refresh('dynamic', {'reordered': True})  # Vercel 不支持 WebSocket
         
         return jsonify({"message": "排序保存成功"})
         

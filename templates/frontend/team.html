@@ -20,9 +20,7 @@ function getApiUrl(path) {
 <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="/static/highlight.js"></script>
     
-    <!-- Socket.IO客户端库 - 实时数据同步 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="/static/socket-client.js"></script>
+    <!-- Socket.IO功能已移除 - 仅支持页面刷新加载数据 -->
     
     <!-- 性能优化加载器 -->
     <script defer src="/static/js/performance-loader.js"></script>
@@ -171,41 +169,6 @@ function getApiUrl(path) {
             overflow-x: hidden;
         }
         
-        /* 消息提示系统 */
-        .message-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            max-width: 400px;
-        }
-
-        .message {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 10px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-left: 4px solid;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateX(450px);
-            transition: transform 0.3s ease;
-        }
-
-        .message.show {
-            transform: translateX(0);
-        }
-
-        .message.success { border-left-color: #22c55e; color: #166534; }
-        .message.error { border-left-color: #ef4444; color: #dc2626; }
-        .message.info { border-left-color: #3b82f6; color: #1d4ed8; }
-
-        .message-icon {
-            font-size: 18px;
-            font-weight: bold;
-        }
         
         /* 粒子背景（展示相关，保留） */
         #particles-js {
@@ -1793,8 +1756,6 @@ function getApiUrl(path) {
     </style>
 </head>
 <body>
-    <!-- 消息提示容器 -->
-    <div class="message-container" id="messageContainer"></div>
     
     <!-- 粒子背景 -->
     <div id="particles-js"></div>
@@ -1839,11 +1800,6 @@ function getApiUrl(path) {
         <div class="menu-toggle">☰</div>
         </nav>
     
-    <!-- 实时更新状态指示器 - 已完全隐藏 -->
-    <div id="realtimeStatus" style="position: fixed; top: 80px; right: 20px; z-index: -1; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 20px; font-size: 12px; display: none; visibility: hidden; opacity: 0; pointer-events: none;">
-        <span id="statusIcon">🔄</span>
-        <span id="statusText">实时同步中...</span>
-    </div>
     
     <!-- 英雄区域 -->
     <section class="team-hero">
@@ -2088,38 +2044,6 @@ function getApiUrl(path) {
         window.createMemberCard = createMemberCard;
         
         // ========================= 消息提示系统 =========================
-        // 消息提示系统
-        function showMessage(text, type = 'info') {
-            const container = document.getElementById('messageContainer');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            
-            const iconMap = {
-                success: '✓',
-                error: '✕',
-                info: 'ⓘ'
-            };
-            
-            message.innerHTML = `
-                <span class="message-icon">${iconMap[type] || 'ⓘ'}</span>
-                <span>${text}</span>
-            `;
-            
-            container.appendChild(message);
-            
-            // 触发显示动画
-            setTimeout(() => message.classList.add('show'), 100);
-            
-            // 3秒后自动移除
-            setTimeout(() => {
-                message.classList.remove('show');
-                setTimeout(() => {
-                    if (message.parentNode) {
-                        message.parentNode.removeChild(message);
-                    }
-                }, 300);
-            }, 3000);
-        }
 
         // 实时状态指示器控制 - 已禁用显示
         function updateRealtimeStatus(status, icon = '🔄', text = '实时同步中...') {
@@ -2443,9 +2367,9 @@ function getApiUrl(path) {
                 
                 // 显示成功消息
                 if (totalMembers > 0) {
-                    showMessage(`团队成员数据已同步，共 ${totalMembers} 位成员`, 'success');
+                    // showMessage(`团队成员数据已同步，共 ${totalMembers} 位成员`, 'success');
                 } else {
-                    showMessage('团队成员数据已同步，暂无成员数据', 'info');
+                    // showMessage('团队成员数据已同步，暂无成员数据', 'info');
                 }
                 
             } catch (err) {
@@ -2465,7 +2389,7 @@ function getApiUrl(path) {
                 
                 // 所有重试都失败了
                 const errorMessage = err.message || '未知错误';
-                showMessage(`团队成员数据加载失败: ${errorMessage}，请检查网络连接或联系管理员`, 'error');
+                // showMessage(`团队成员数据加载失败: ${errorMessage}，请检查网络连接或联系管理员`, 'error');
                 updateRealtimeStatus('error', '❌', '团队成员数据加载失败');
                 
                 // 显示错误状态，提供重试选项
@@ -2735,7 +2659,7 @@ function getApiUrl(path) {
                 }
                 
                 // 所有重试都失败了
-                showMessage('研究项目数据加载失败，请刷新页面重试', 'error');
+                // showMessage('研究项目数据加载失败，请刷新页面重试', 'error');
                 updateRealtimeStatus('error', '❌', '研究项目数据加载失败');
                 researchData = [];
                 updateCounts();
@@ -3022,7 +2946,7 @@ function getApiUrl(path) {
                 
             } catch (err) {
                 console.error('筛选研究项目失败:', err);
-                showMessage('筛选研究项目失败，请重试', 'error');
+                // showMessage('筛选研究项目失败，请重试', 'error');
                 renderCards([], false);
             } finally {
                 // 移除加载状态
@@ -3081,7 +3005,7 @@ function getApiUrl(path) {
                 // 性能警告
                 if (this.totalLoadTime > 3000) {
                     console.warn('⚠️ 数据加载时间过长，建议优化');
-                    showMessage('数据加载较慢，正在优化中...', 'info');
+                    // showMessage('数据加载较慢，正在优化中...', 'info');
                 }
             },
             
@@ -3167,11 +3091,11 @@ function getApiUrl(path) {
                         console.warn(`⚠️ ${type}数据更新较慢，耗时: ${duration}ms`);
                     }
                     
-                    showMessage(`${type === 'team' ? '团队成员' : '研究'}数据已更新 (${operation})`, 'info');
+                    // showMessage(`${type === 'team' ? '团队成员' : '研究'}数据已更新 (${operation})`, 'info');
                     updateRealtimeStatus('show', '✅', '数据更新完成');
                 }).catch(error => {
                     console.error(`${type}数据更新失败:`, error);
-                    showMessage(`${type === 'team' ? '团队成员' : '研究'}数据更新失败`, 'error');
+                    // showMessage(`${type === 'team' ? '团队成员' : '研究'}数据更新失败`, 'error');
                 });
             }
             
@@ -3202,11 +3126,11 @@ function getApiUrl(path) {
                     
                     // 特殊处理测试同步
                     if (event.data.operation === 'test-sync') {
-                        showMessage('✅ 收到管理页面的同步测试，前后端同步功能正常！', 'success');
+                        // showMessage('✅ 收到管理页面的同步测试，前后端同步功能正常！', 'success');
                         return; // 测试同步不需要实际更新数据
                     }
                     
-                    showMessage(`团队成员数据已更新 (${operationText})`, 'info');
+                    // showMessage(`团队成员数据已更新 (${operationText})`, 'info');
                     
                     // 根据操作类型决定更新策略
                     if (event.data.operation === 'reordered') {
@@ -3277,7 +3201,11 @@ function getApiUrl(path) {
                 }
             });
 
-            // Socket.IO实时刷新 - 优化版本
+            // Socket.IO功能已移除 - 仅支持页面刷新加载数据
+            console.log('📄 页面数据加载完成，实时同步功能已禁用');
+            
+            // Socket.IO功能已移除，注释掉相关代码
+            /*
             if (typeof socket !== 'undefined' && socket) {
                 socket.on('page_refresh', function(data) {
                     const now = Date.now();
@@ -3297,7 +3225,7 @@ function getApiUrl(path) {
                         if (data.payload) {
                             // 处理测试通知
                             if (data.payload.test_notification) {
-                                showMessage(`✅ 收到后端API测试通知: ${data.payload.message || '测试成功'}`, 'success');
+                                // showMessage(`✅ 收到后端API测试通知: ${data.payload.message || '测试成功'}`, 'success');
                                 return;
                             }
                             
@@ -3310,7 +3238,7 @@ function getApiUrl(path) {
                                     'reordered': '重新排序'
                                 }[Object.keys(data.payload).find(key => data.payload[key] === true)] || '更新';
                                 
-                                showMessage(`团队成员数据已更新 (${operationText})`, 'info');
+                                // showMessage(`团队成员数据已更新 (${operationText})`, 'info');
                                 
                                 // 根据操作类型决定更新策略
                                 if (data.payload.reordered) {
@@ -3331,7 +3259,7 @@ function getApiUrl(path) {
                                     'research_reordered': '重新排序研究项目'
                                 }[Object.keys(data.payload).find(key => data.payload[key] === true)] || '更新研究项目';
                                 
-                                showMessage(`研究项目数据已更新 (${operationText})`, 'info');
+                                // showMessage(`研究项目数据已更新 (${operationText})`, 'info');
                                 
                                 // 根据操作类型决定更新策略
                                 if (data.payload.research_reordered) {
@@ -3352,7 +3280,7 @@ function getApiUrl(path) {
                                     'grade_reordered': '重新排序年级'
                                 }[Object.keys(data.payload).find(key => data.payload[key] === true)] || '更新年级';
                                 
-                                showMessage(`年级数据已更新 (${operationText})`, 'info');
+                                // showMessage(`年级数据已更新 (${operationText})`, 'info');
                                 
                                 // 年级数据更新后，需要重新加载年级列表和团队数据
                                 if (data.payload.grade_reordered) {
@@ -3384,11 +3312,11 @@ function getApiUrl(path) {
                             
                             // 特殊处理测试同步
                             if (data.operation === 'test-sync') {
-                                showMessage('✅ 收到管理页面的同步测试，前后端同步功能正常！', 'success');
+                                // showMessage('✅ 收到管理页面的同步测试，前后端同步功能正常！', 'success');
                                 return; // 测试同步不需要实际更新数据
                             }
                             
-                            showMessage(`团队成员数据已更新 (${operationText})`, 'info');
+                            // showMessage(`团队成员数据已更新 (${operationText})`, 'info');
                             
                             // 检查是否是排序操作
                             if (data.isReorder || data.type === 'reordered') {
@@ -3416,7 +3344,7 @@ function getApiUrl(path) {
                 // 监听连接状态
                 socket.on('connect', function() {
                     console.log('✅ Socket.IO连接成功，团队页面实时更新已启用');
-                    showMessage('实时数据同步已连接', 'success');
+                    // showMessage('实时数据同步已连接', 'success');
                     
                     // 加入团队页面房间
                     socket.emit('join_page', { page: 'team' });
@@ -3427,7 +3355,7 @@ function getApiUrl(path) {
                     console.log('❌ Socket.IO连接断开');
                     // 减少错误提示频率
                     if (!window.socketDisconnectNotified) {
-                        showMessage('实时数据同步连接断开', 'error');
+                        // showMessage('实时数据同步连接断开', 'error');
                         window.socketDisconnectNotified = true;
                         setTimeout(() => {
                             window.socketDisconnectNotified = false;
@@ -3438,7 +3366,7 @@ function getApiUrl(path) {
                 
                 socket.on('connect_error', function(error) {
                     console.error('❌ Socket.IO连接错误:', error);
-                    showMessage('实时数据同步连接失败', 'error');
+                    // showMessage('实时数据同步连接失败', 'error');
                 });
                 
                 socket.on('joined_page', function(data) {
@@ -3447,6 +3375,7 @@ function getApiUrl(path) {
             } else {
                 console.warn('⚠️ Socket.IO未初始化，实时更新功能不可用');
             }
+            */
         }
 
         // 等待所有脚本加载完成后再初始化数据 - 修复版本
@@ -3470,42 +3399,19 @@ function getApiUrl(path) {
                 setCurrentPage('team');
             }
             
-            // 初始化Socket.IO连接 - 确保连接建立
-            if (typeof initSocketIO === 'function') {
-                console.log('🔗 初始化Socket.IO连接...');
-                initSocketIO();
-                
-                // 等待Socket.IO连接建立
-                let connectionAttempts = 0;
-                const maxAttempts = 10;
-                const checkConnection = () => {
-                    if (typeof socket !== 'undefined' && socket && socket.connected) {
-                        console.log('✅ Socket.IO连接已建立');
-                        proceedWithDataLoading();
-                    } else if (connectionAttempts < maxAttempts) {
-                        connectionAttempts++;
-                        console.log(`⏱️ 等待Socket.IO连接... (${connectionAttempts}/${maxAttempts})`);
-                        setTimeout(checkConnection, 500);
-                    } else {
-                        console.warn('⚠️ Socket.IO连接超时，继续加载数据');
-                        proceedWithDataLoading();
-                    }
-                };
-                checkConnection();
-            } else {
-                console.warn('⚠️ Socket.IO初始化函数未找到，直接加载数据');
-                proceedWithDataLoading();
-            }
+            // Socket.IO功能已移除，直接加载数据
+            console.log('📄 直接加载页面数据...');
+            proceedWithDataLoading();
         }
         
         // 添加手动数据加载函数
         window.manualLoadTeamData = function() {
             console.log('🔄 手动触发团队数据加载...');
-            showMessage('正在手动加载团队数据...', 'info');
+            // showMessage('正在手动加载团队数据...', 'info');
             if (typeof loadTeamDataWithRetry === 'function') {
                 loadTeamDataWithRetry();
             } else {
-                showMessage('数据加载函数未定义，请刷新页面', 'error');
+                // showMessage('数据加载函数未定义，请刷新页面', 'error');
             }
         };
         
@@ -3603,7 +3509,7 @@ function getApiUrl(path) {
                     console.log(`🔄 重试加载数据 (${performanceMonitor.retryCount}/${performanceMonitor.maxRetries})`);
                     setTimeout(initializePageData, 1000);
                 } else {
-                    showMessage('数据加载失败，请刷新页面重试', 'error');
+                    // showMessage('数据加载失败，请刷新页面重试', 'error');
                 }
             }
         }
@@ -3640,20 +3546,8 @@ function getApiUrl(path) {
         window.loadTeamData = loadTeamDataWithRetry;
         window.loadResearchData = loadResearchDataWithRetry;
         
-        // 确保Socket.IO连接在页面加载时立即初始化
-        if (typeof initSocketIO === 'function') {
-            console.log('🔗 立即初始化Socket.IO连接...');
-            initSocketIO();
-        } else {
-            console.warn('⚠️ initSocketIO函数未找到，尝试延迟初始化');
-            setTimeout(() => {
-                if (typeof initSocketIO === 'function') {
-                    initSocketIO();
-                } else {
-                    console.error('❌ initSocketIO函数仍未找到');
-                }
-            }, 1000);
-        }
+        // Socket.IO功能已移除，无需初始化
+        console.log('📄 Socket.IO功能已禁用，页面将使用刷新加载数据');
         
         // 窗口大小改变时重新计算高度
         window.addEventListener('resize', () => {
@@ -4048,9 +3942,6 @@ function getApiUrl(path) {
         </button>
         <button id="refreshTeamBtn" onclick="refreshTeamData()" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); transition: all 0.3s ease;">
             ⚡ 刷新团队
-        </button>
-        <button id="testRealtimeBtn" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
-            🔄 测试实时同步
         </button>
         <div id="performanceInfo" style="background: rgba(0, 0, 0, 0.8); color: white; padding: 8px 12px; border-radius: 15px; font-size: 11px; text-align: center; min-width: 120px;">
             <div>⚡ 响应时间: <span id="responseTime">--</span>ms</div>

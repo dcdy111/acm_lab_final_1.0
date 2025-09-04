@@ -6,7 +6,7 @@
 
 from flask import Blueprint, request, jsonify, session
 from db_utils import get_db
-from socket_utils import notify_page_refresh
+# from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
 import logging
 import json
 
@@ -108,16 +108,16 @@ def create_grade():
                 'updated_at': None
             }
             
-            # 发送实时通知到前端页面
-            notify_page_refresh('team', {
-                'grade_created': True,
-                'grade_id': grade_id,
-                'grade_data': grade_data
-            })
-            notify_page_refresh('home', {
-                'grade_created': True,
-                'grade_id': grade_id
-            })
+            # 发送实时通知到前端页面 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('team', {
+            #     'grade_created': True,
+            #     'grade_id': grade_id,
+            #     'grade_data': grade_data
+            # })  # Vercel 不支持 WebSocket
+            # notify_page_refresh('home', {
+            #     'grade_created': True,
+            #     'grade_id': grade_id
+            # })  # Vercel 不支持 WebSocket
             
             logger.info(f"创建年级成功: {name}")
             return jsonify(grade_data), 201
@@ -212,16 +212,16 @@ def update_grade(grade_id):
                 'updated_at': updated_grade['updated_at']
             }
             
-            # 发送实时通知到前端页面
-            notify_page_refresh('team', {
-                'grade_updated': True,
-                'grade_id': grade_id,
-                'grade_data': grade_data
-            })
-            notify_page_refresh('home', {
-                'grade_updated': True,
-                'grade_id': grade_id
-            })
+            # 发送实时通知到前端页面 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('team', {
+            #     'grade_updated': True,
+            #     'grade_id': grade_id,
+            #     'grade_data': grade_data
+            # })  # Vercel 不支持 WebSocket
+            # notify_page_refresh('home', {
+            #     'grade_updated': True,
+            #     'grade_id': grade_id
+            # })  # Vercel 不支持 WebSocket
             
             logger.info(f"更新年级成功: {name}")
             return jsonify(grade_data), 200
@@ -257,16 +257,16 @@ def delete_grade(grade_id):
             conn.execute('DELETE FROM grades WHERE id = ?', (grade_id,))
             conn.commit()
             
-            # 发送实时通知到前端页面
-            notify_page_refresh('team', {
-                'grade_deleted': True,
-                'grade_id': grade_id,
-                'grade_name': grade_name
-            })
-            notify_page_refresh('home', {
-                'grade_deleted': True,
-                'grade_id': grade_id
-            })
+            # 发送实时通知到前端页面 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('team', {
+            #     'grade_deleted': True,
+            #     'grade_id': grade_id,
+            #     'grade_name': grade_name
+            # })  # Vercel 不支持 WebSocket
+            # notify_page_refresh('home', {
+            #     'grade_deleted': True,
+            #     'grade_id': grade_id
+            # })  # Vercel 不支持 WebSocket
             
             logger.info(f"删除年级成功: {grade_name}")
             return jsonify({"message": "年级删除成功"}), 200
@@ -301,15 +301,15 @@ def reorder_grades():
             
             conn.commit()
             
-            # 发送实时通知到前端页面
-            notify_page_refresh('team', {
-                'grade_reordered': True,
-                'grade_ids': grade_ids
-            })
-            notify_page_refresh('home', {
-                'grade_reordered': True,
-                'grade_ids': grade_ids
-            })
+            # 发送实时通知到前端页面 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('team', {
+            #     'grade_reordered': True,
+            #     'grade_ids': grade_ids
+            # })  # Vercel 不支持 WebSocket
+            # notify_page_refresh('home', {
+            #     'grade_reordered': True,
+            #     'grade_ids': grade_ids
+            # })  # Vercel 不支持 WebSocket
             
             logger.info(f"年级排序更新成功，共{len(grade_ids)}个年级")
             return jsonify({"message": "年级排序更新成功"}), 200

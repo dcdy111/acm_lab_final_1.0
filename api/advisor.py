@@ -3,7 +3,7 @@ from db_utils import get_db
 import os
 from datetime import datetime
 # 导入Socket.IO通知工具
-from socket_utils import notify_team_update
+# from socket_utils import notify_team_update  # Vercel 不支持 WebSocket
 
 advisor_bp = Blueprint('advisor', __name__)
 
@@ -123,7 +123,7 @@ def create_advisor():
             print(f"✅ 指导老师创建成功: {name}")
             
             # 通知前端刷新
-            notify_team_update({'advisor_created': True, 'advisor_id': advisor_id})
+            # notify_team_update({'advisor_created': True, 'advisor_id': advisor_id})  # Vercel 不支持 WebSocket
             
             return jsonify({
                 "success": True,
@@ -213,7 +213,7 @@ def update_advisor(advisor_id):
                 print(f"✅ 指导老师更新成功: ID={advisor_id}")
                 
                 # 通知前端刷新
-                notify_team_update({'advisor_updated': True, 'advisor_id': advisor_id})
+                # notify_team_update({'advisor_updated': True, 'advisor_id': advisor_id})  # Vercel 不支持 WebSocket
                 
                 return jsonify({"success": True, "message": "更新成功"})
             else:
@@ -244,7 +244,7 @@ def delete_advisor(advisor_id):
             print(f"✅ 指导老师删除成功: {advisor['name']}")
             
             # 通知前端刷新
-            notify_team_update({'advisor_deleted': True, 'advisor_id': advisor_id})
+            # notify_team_update({'advisor_deleted': True, 'advisor_id': advisor_id})  # Vercel 不支持 WebSocket
             
             return jsonify({"success": True, "message": "删除成功"})
             
@@ -277,7 +277,7 @@ def reorder_advisors():
             print(f"✅ 指导老师排序更新成功，共{len(advisor_ids)}个指导老师")
             
             # 通知前端刷新
-            notify_team_update({'advisors_reordered': True, 'advisor_ids': advisor_ids})
+            # notify_team_update({'advisors_reordered': True, 'advisor_ids': advisor_ids})  # Vercel 不支持 WebSocket
             
             return jsonify({"success": True, "message": "排序更新成功"})
             

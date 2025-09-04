@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, abort, current_app
 from db_utils import get_db
 from datetime import datetime
-from socket_utils import notify_page_refresh
+# from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
 from .utils import allowed_file, ensure_upload_dir
 import json
 

@@ -128,14 +128,14 @@ def create_team_member():
             
             logger.info(f"创建团队成员成功: {name}")
             
-            # 通知前端刷新
-            try:
-                from socket_utils import notify_page_refresh
-                notify_page_refresh('team', {'action': 'created', 'member_id': member_id})
-                notify_page_refresh('home', {'action': 'created', 'member_id': member_id})
-            except Exception as e:
-                logger.warning(f"通知前端刷新失败: {e}")
-                # 不影响主要功能
+            # 通知前端刷新 - Vercel 不支持 WebSocket，已禁用
+            # try:
+            #     from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
+            #     notify_page_refresh('team', {'action': 'created', 'member_id': member_id})  # Vercel 不支持 WebSocket
+            #     notify_page_refresh('home', {'action': 'created', 'member_id': member_id})  # Vercel 不支持 WebSocket
+            # except Exception as e:
+            #     logger.warning(f"通知前端刷新失败: {e}")
+            #     # 不影响主要功能
             
             return jsonify({
                 "success": True,
@@ -218,13 +218,13 @@ def update_team_member(member_id):
                 
                 logger.info(f"更新团队成员成功: ID={member_id}")
                 
-                # 通知前端刷新
-                try:
-                    from socket_utils import notify_page_refresh
-                    notify_page_refresh('team', {'action': 'updated', 'member_id': member_id})
-                    notify_page_refresh('home', {'action': 'updated', 'member_id': member_id})
-                except Exception as e:
-                    logger.warning(f"通知前端刷新失败: {e}")
+                # 通知前端刷新 - Vercel 不支持 WebSocket，已禁用
+                # try:
+                #     from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
+                #     notify_page_refresh('team', {'action': 'updated', 'member_id': member_id})  # Vercel 不支持 WebSocket
+                #     notify_page_refresh('home', {'action': 'updated', 'member_id': member_id})  # Vercel 不支持 WebSocket
+                # except Exception as e:
+                #     logger.warning(f"通知前端刷新失败: {e}")
                 
                 return jsonify({"success": True, "message": "更新成功"})
             else:
@@ -254,13 +254,13 @@ def delete_team_member(member_id):
             
             logger.info(f"删除团队成员成功: {member['name']}")
             
-            # 通知前端刷新
-            try:
-                from socket_utils import notify_page_refresh
-                notify_page_refresh('team', {'action': 'deleted', 'member_id': member_id})
-                notify_page_refresh('home', {'action': 'deleted', 'member_id': member_id})
-            except Exception as e:
-                logger.warning(f"通知前端刷新失败: {e}")
+            # 通知前端刷新 - Vercel 不支持 WebSocket，已禁用
+            # try:
+            #     from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
+            #     notify_page_refresh('team', {'action': 'deleted', 'member_id': member_id})  # Vercel 不支持 WebSocket
+            #     notify_page_refresh('home', {'action': 'deleted', 'member_id': member_id})  # Vercel 不支持 WebSocket
+            # except Exception as e:
+            #     logger.warning(f"通知前端刷新失败: {e}")
             
             return jsonify({"success": True, "message": "删除成功"})
             
@@ -283,18 +283,19 @@ def test_notification():
         
         logger.info(f"收到测试通知请求: {page}, {notification_type}, {operation}")
         
-        # 尝试发送Socket.IO通知
-        try:
-            from socket_utils import notify_page_refresh
-            notify_page_refresh(page, {
-                'type': notification_type,
-                'operation': operation,
-                'payload': payload,
-                'test': True
-            })
-            logger.info(f"测试通知已发送到 {page}")
-        except Exception as e:
-            logger.warning(f"发送测试通知失败: {e}")
+        # 尝试发送Socket.IO通知 - Vercel 不支持 WebSocket，已禁用
+        # try:
+        #     from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
+        #     notify_page_refresh(page, {
+        #         'type': notification_type,
+        #         'operation': operation,
+        #         'payload': payload,
+        #         'test': True
+        #     })  # Vercel 不支持 WebSocket
+        #     logger.info(f"测试通知已发送到 {page}")
+        # except Exception as e:
+        #     logger.warning(f"发送测试通知失败: {e}")
+        logger.info(f"WebSocket 功能在 Vercel 上不可用，跳过测试通知")
         
         return jsonify({
             "success": True,
@@ -347,13 +348,13 @@ def reorder_team_members():
             
             logger.info(f"团队成员排序更新成功，共{len(member_ids)}个成员")
             
-            # 通知前端刷新
-            try:
-                from socket_utils import notify_page_refresh
-                notify_page_refresh('team', {'action': 'reordered', 'member_ids': member_ids})
-                notify_page_refresh('home', {'action': 'reordered', 'member_ids': member_ids})
-            except Exception as e:
-                logger.warning(f"通知前端刷新失败: {e}")
+            # 通知前端刷新 - Vercel 不支持 WebSocket，已禁用
+            # try:
+            #     from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
+            #     notify_page_refresh('team', {'action': 'reordered', 'member_ids': member_ids})  # Vercel 不支持 WebSocket
+            #     notify_page_refresh('home', {'action': 'reordered', 'member_ids': member_ids})  # Vercel 不支持 WebSocket
+            # except Exception as e:
+            #     logger.warning(f"通知前端刷新失败: {e}")
             
             return jsonify({"success": True, "message": "排序更新成功"})
             
@@ -425,7 +426,7 @@ def create_research_area():
             logger.info(f"创建研究领域成功: {title}")
             
             # 通知前端刷新
-            # notify_page_refresh('research_areas', {'action': 'created', 'area_id': area_id})
+            # # notify_page_refresh('research_areas', {'action': 'created', 'area_id': area_id})  # Vercel 不支持 WebSocket
             
             return jsonify({
                 "success": True,
@@ -497,7 +498,7 @@ def update_research_area(area_id):
                 logger.info(f"更新研究领域成功: ID={area_id}")
                 
                             # 通知前端刷新
-            # notify_page_refresh('research_areas', {'action': 'updated', 'area_id': area_id})
+            # # notify_page_refresh('research_areas', {'action': 'updated', 'area_id': area_id})  # Vercel 不支持 WebSocket
                 
                 return jsonify({"success": True, "message": "更新成功"})
             else:
@@ -528,7 +529,7 @@ def delete_research_area(area_id):
             logger.info(f"删除研究领域成功: {area['title']}")
             
             # 通知前端刷新
-            # notify_page_refresh('research_areas', {'action': 'deleted', 'area_id': area_id})
+            # # notify_page_refresh('research_areas', {'action': 'deleted', 'area_id': area_id})  # Vercel 不支持 WebSocket
             
             return jsonify({"success": True, "message": "删除成功"})
             
@@ -561,7 +562,7 @@ def reorder_research_areas():
             logger.info(f"研究领域排序更新成功，共{len(area_ids)}个领域")
             
             # 通知前端刷新
-            # notify_page_refresh('research_areas', {'action': 'reordered', 'area_ids': area_ids})
+            # # notify_page_refresh('research_areas', {'action': 'reordered', 'area_ids': area_ids})  # Vercel 不支持 WebSocket
             
             return jsonify({"success": True, "message": "排序更新成功"})
             

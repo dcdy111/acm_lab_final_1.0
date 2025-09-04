@@ -30,7 +30,7 @@ function getApiUrl(path) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/v4-shims.min.css" media="print" onload="this.media='all'">
     <script defer src="/static/highlight.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <!-- Socket.IO功能已移除 - 仅支持页面刷新加载数据 -->
     <script>
       tailwind.config = {
         theme: {
@@ -103,41 +103,6 @@ function getApiUrl(path) {
             --card-bg: rgba(20, 20, 20, 0.7);
         }
         
-        /* 消息提示系统 */
-        .message-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            max-width: 400px;
-        }
-
-        .message {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 10px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-left: 4px solid;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateX(450px);
-            transition: transform 0.3s ease;
-        }
-
-        .message.show {
-            transform: translateX(0);
-        }
-
-        .message.success { border-left-color: #22c55e; color: #166534; }
-        .message.error { border-left-color: #ef4444; color: #dc2626; }
-        .message.info { border-left-color: #3b82f6; color: #1d4ed8; }
-
-        .message-icon {
-            font-size: 18px;
-            font-weight: bold;
-        }
         
         * {
             margin: 0;
@@ -2114,8 +2079,6 @@ function getApiUrl(path) {
        </style>
 </head>
 <body>
-    <!-- 消息提示容器 -->
-    <div class="message-container" id="messageContainer"></div>
     
     <!-- 粒子背景 -->
     <div id="particles-js"></div>
@@ -3146,38 +3109,6 @@ function getApiUrl(path) {
     
     <!-- 动态数据加载功能 -->
     <script>
-        // 消息提示系统
-        function showMessage(text, type = 'info') {
-            const container = document.getElementById('messageContainer');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            
-            const iconMap = {
-                success: '✓',
-                error: '✕',
-                info: 'ⓘ'
-            };
-            
-            message.innerHTML = `
-                <span class="message-icon">${iconMap[type] || 'ⓘ'}</span>
-                <span>${text}</span>
-            `;
-            
-            container.appendChild(message);
-            
-            // 触发显示动画
-            setTimeout(() => message.classList.add('show'), 100);
-            
-            // 3秒后自动移除
-            setTimeout(() => {
-                message.classList.remove('show');
-                setTimeout(() => {
-                    if (message.parentNode) {
-                        message.parentNode.removeChild(message);
-                    }
-                }, 300);
-            }, 3000);
-        }
 
         // 加载指导老师数据
         window.loadTeamLeaders = async function() {
@@ -3434,7 +3365,6 @@ function getApiUrl(path) {
                 // 显示成功消息（可选）
                 if (papers.length > 0) {
                     console.log('🎉 论文数据已成功加载到首页');
-                    showMessage(`成功加载 ${papers.length} 篇论文`, 'success');
                 }
                 
             } catch (error) {
@@ -3592,13 +3522,11 @@ function getApiUrl(path) {
             // 设置论文数据实时更新监听
             setupPapersRealtimeUpdates();
             
-            // 延迟设置页面类型，确保Socket.IO已经初始化
-            setTimeout(function() {
-                if (typeof setCurrentPage === 'function') {
-                    setCurrentPage('home');
-                    console.log('📍 页面类型已设置为: home');
-                }
-            }, 1000); // 减少延迟
+            // 设置页面类型
+            if (typeof setCurrentPage === 'function') {
+                setCurrentPage('home');
+                console.log('📍 页面类型已设置为: home');
+            }
             
             // 设置实时更新系统
             setTimeout(function() {
@@ -3685,7 +3613,6 @@ function getApiUrl(path) {
                         loadPapers();
                     }
                     
-                    showMessage(`论文数据已更新 (${event.data.operation})`, 'info');
                 }
             });
             
@@ -3711,7 +3638,6 @@ function getApiUrl(path) {
                             loadPapers();
                         }
                         
-                        showMessage(`论文数据已同步更新 (${updateData.operation})`, 'info');
                     } catch (error) {
                         console.error('解析存储事件数据失败:', error);
                     }
@@ -3719,19 +3645,8 @@ function getApiUrl(path) {
             });
             
             // Socket.IO实时更新（如果可用）
-            if (typeof socket !== 'undefined' && socket) {
-                socket.on('papers_updated', function(data) {
-                    const now = Date.now();
-                    if (now - lastUpdateTime < updateCooldown) {
-                        return;
-                    }
-                    lastUpdateTime = now;
-                    
-                    console.log('🔗 Socket.IO收到论文更新通知:', data);
-                    loadPapers();
-                    showMessage('论文数据已实时更新', 'success');
-                });
-            }
+            // Socket.IO功能已移除，仅支持页面刷新加载数据
+            console.log('📄 首页数据加载完成，实时同步功能已禁用');
             
             // 定期检查数据更新（备用方案）
             setInterval(async () => {
@@ -3755,7 +3670,6 @@ function getApiUrl(path) {
                             console.log('🔄 检测到论文数据变化，自动更新...');
                             window.lastPapersData = newData;
                             loadPapers();
-                            showMessage('论文数据已自动更新', 'info');
                         } else if (!window.lastPapersData) {
                             window.lastPapersData = newData;
                         }
@@ -3794,36 +3708,33 @@ function getApiUrl(path) {
                     loadTeamLeaders().then(() => {
                         const duration = Date.now() - startTime;
                         console.log(`指导老师数据更新完成，耗时: ${duration}ms`);
-                        showMessage(`指导老师数据已更新 (${operation})`, 'info');
                     });
                 } else if (type === 'team_members') {
                     loadTeamMembers().then(() => {
                         const duration = Date.now() - startTime;
                         console.log(`团队成员数据更新完成，耗时: ${duration}ms`);
-                        showMessage(`团队成员数据已更新 (${operation})`, 'info');
                     });
                 } else if (type === 'papers') {
                     loadPapers().then(() => {
                         const duration = Date.now() - startTime;
                         console.log(`论文数据更新完成，耗时: ${duration}ms`);
-                        showMessage(`论文数据已更新 (${operation})`, 'info');
                     });
                 } else if (type === 'innovation') {
                     loadInnovationProjects().then(() => {
                         const duration = Date.now() - startTime;
                         console.log(`科创成果数据更新完成，耗时: ${duration}ms`);
-                        showMessage(`科创成果数据已更新 (${operation})`, 'info');
                     });
                 } else if (type === 'activities') {
                     loadActivities().then(() => {
                         const duration = Date.now() - startTime;
                         console.log(`活动数据更新完成，耗时: ${duration}ms`);
-                        showMessage(`活动数据已更新 (${operation})`, 'info');
                     });
                 }
             }
             
             // Socket.IO实时刷新 - 优化版本
+            // Socket.IO功能已移除，注释掉相关代码
+            /*
             if (typeof socket !== 'undefined' && socket) {
                 socket.on('page_refresh', function(data) {
                     const now = Date.now();
@@ -3857,7 +3768,6 @@ function getApiUrl(path) {
                 // 监听连接状态
                 socket.on('connect', function() {
                     console.log('首页Socket.IO连接成功，实时更新已启用');
-                    showMessage('实时数据同步已连接', 'success');
                 });
                 
                 socket.on('disconnect', function() {
@@ -3870,6 +3780,7 @@ function getApiUrl(path) {
                     immediateUpdate('team_members', data.operation || 'updated');
                 });
             }
+            */
             
             // 监听存储变化事件（多标签页同步）- 优化版本
             window.addEventListener('storage', (e) => {
@@ -3978,9 +3889,10 @@ function getApiUrl(path) {
         // 使用统一的访问统计追踪系统
         // 访问统计系统已移除
         
-        // 初始化Socket.IO实时同步
-        let socket = null;
+        // Socket.IO功能已移除，无需初始化
+        console.log('📄 Socket.IO功能已禁用，页面将使用刷新加载数据');
         
+        /*
         function initSocketIO() {
             try {
                 socket = io({
@@ -4044,17 +3956,8 @@ function getApiUrl(path) {
             }
         }
 
-        // 页面加载完成后初始化Socket.IO
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initSocketIO, 1000);
-        });
-
-        // 页面卸载时断开连接
-        window.addEventListener('beforeunload', function() {
-            if (socket) {
-                socket.disconnect();
-            }
-        });
+        // Socket.IO功能已移除，无需初始化
+        */
         
         // 加载性能监控器（开发环境）
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {

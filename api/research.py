@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 from db_utils import get_db
 import json
 from datetime import datetime
-from socket_utils import notify_page_refresh
+# from socket_utils import notify_page_refresh  # Vercel 不支持 WebSocket
 
 research_bp = Blueprint('research', __name__)
 
@@ -132,12 +132,12 @@ def create_research_area():
             area_id = cursor.lastrowid
             conn.commit()
             
-            # 通知前端更新
-            notify_page_refresh('research', {
-                'operation': 'created',
-                'type': 'RESEARCH_DATA_UPDATED',
-                'timestamp': datetime.now().timestamp() * 1000
-            })
+            # 通知前端更新 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('research', {
+            #     'operation': 'created',
+            #     'type': 'RESEARCH_DATA_UPDATED',
+            #     'timestamp': datetime.now()  # Vercel 不支持 WebSocket.timestamp() * 1000
+            # })
             
             return jsonify({
                 'success': True,
@@ -228,12 +228,12 @@ def update_research_area(area_id):
             conn.execute(sql, update_values)
             conn.commit()
             
-            # 通知前端更新
-            notify_page_refresh('research', {
-                'operation': 'updated',
-                'type': 'RESEARCH_DATA_UPDATED',
-                'timestamp': datetime.now().timestamp() * 1000
-            })
+            # 通知前端更新 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('research', {
+            #     'operation': 'updated',
+            #     'type': 'RESEARCH_DATA_UPDATED',
+            #     'timestamp': datetime.now()  # Vercel 不支持 WebSocket.timestamp() * 1000
+            # })
             
             return jsonify({
                 'success': True,
@@ -264,12 +264,12 @@ def delete_research_area(area_id):
             conn.execute('DELETE FROM research_areas WHERE id = ?', (area_id,))
             conn.commit()
             
-            # 通知前端更新
-            notify_page_refresh('research', {
-                'operation': 'deleted',
-                'type': 'RESEARCH_DATA_UPDATED',
-                'timestamp': datetime.now().timestamp() * 1000
-            })
+            # 通知前端更新 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('research', {
+            #     'operation': 'deleted',
+            #     'type': 'RESEARCH_DATA_UPDATED',
+            #     'timestamp': datetime.now()  # Vercel 不支持 WebSocket.timestamp() * 1000
+            # })
             
             return jsonify({
                 'success': True,
@@ -303,12 +303,12 @@ def reorder_research_areas():
             
             conn.commit()
             
-            # 通知前端更新
-            notify_page_refresh('research', {
-                'operation': 'reordered',
-                'type': 'RESEARCH_DATA_UPDATED',
-                'timestamp': datetime.now().timestamp() * 1000
-            })
+            # 通知前端更新 - Vercel 不支持 WebSocket，已禁用
+            # notify_page_refresh('research', {
+            #     'operation': 'reordered',
+            #     'type': 'RESEARCH_DATA_UPDATED',
+            #     'timestamp': datetime.now()  # Vercel 不支持 WebSocket.timestamp() * 1000
+            # })
             
             return jsonify({
                 'success': True,
